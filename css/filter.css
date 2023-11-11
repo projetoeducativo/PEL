@@ -1,0 +1,82 @@
+@charset "UTF-8";
+/*
+ |  tail.datetime - The vanilla way to select dates and times!
+ |  @file       ./less/tail.datetime-harx-light.less
+ |  @author     SamBrishes <sam@pytes.net>
+ |  @version    0.4.14 - Beta
+ |
+ |  @website    https://github.com/pytesNET/tail.DateTime
+ |  @license    X11 / MIT License
+ |  @copyright  Copyright © 2018 - 2019 SamBrishes, pytesNET <info@pytes.net>
+ */
+
+/*custom for menus:*/
+#menu {
+  vertical-align: top;
+  display: inline-block;
+  width: 15%;
+  margin-bottom: 20px;
+  box-shadow: black;
+}
+.filterselect{
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  margin-top: 10px;
+  margin-left: 10px;  
+}
+#sel_Escola, .filterselect select{
+    height: 400px;
+    display: inline-flex;
+    width: 100%;
+}
+#sel_Nvel, .filterselect select{
+  height: 90px;
+  display: inline-flex;
+  width: 100%;
+}
+#sel_Agrupamento, .filterselect select{
+  height: 140px;
+  display: inline-flex;
+  width: 100%;
+}
+.filterselect input, .filterselect select {
+    height: 100px;
+    display: inline-flex;
+    width: 100%;
+}
+.filterselect p{
+  
+  font-family: 'Open Sans', sans-serif;
+  text-emphasis: black;
+  margin-top: 10px !important;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 0px;
+}
+.filterlabel {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    margin-right: 0;
+    margin-top: 5px;
+    padding: 0px;
+    border: 0px;
+    
+    /*clear: left;*/
+}
+.filterlabel + .filterlabel {
+    margin-bottom: 40px;
+    margin-top: 5px;
+    clear: both;
+    text-shadow: 0px 1px 1px rgb(48, 34, 34);
+    text-align: left;
+    font-weight: bold;
+    cursor: pointer;
+}
+.slider {
+  font-family: 'Open Sans', sans-serif;
+  margin-top: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 10px;
+}
+
