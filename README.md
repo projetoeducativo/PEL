@@ -1,1 +1,1 @@
-# PEL
+A necessidade de uma monitorização e avaliação do sistema educativo de Coimbra, num momento em que a transferência de competências para município se encontra concluída, levou antecipadamente à preparação de uma plataforma digital para que todo trabalho de recolha, análise e promoção de cenários com base nos dados provenientes dos Agrupamento de Escolas e Escolas não Agrupadas, das diferentes entidades públicas e privadas e da própria autarquia.

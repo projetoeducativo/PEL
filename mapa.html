@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;1,300&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/MarkerCluster.css">
+        <link rel="stylesheet" href="css/MarkerCluster.Default.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/filter.css">
+        <link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;            
+        }
+
+        </style>
+        <title>Fluxos de Alunos em Coimbra</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet-svg-shape-markers.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet.markercluster.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="js/tailDT.js"></script>
+        <script src="js/nouislider.min.js"></script>
+        <script src="js/wNumb.js"></script>
+        <script src="data/Freguesia_4.js"></script>
+        <script src="data/Clostersdealunos_5.js"></script>
+        <script src="data/Fluxos_6.js"></script>
+        <script src="data/Alunos_7.js"></script>
+        <script src="data/Agrupamentodeescolas_8.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'Line') {
+              highlightLayer.setStyle({
+                color: '#f5e502',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#f5e502',
+                fillOpacity: 0.7
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:20, minZoom:8
+        }).fitBounds([[40.1597752,-8.57100],[40.300394361962134,-8.342146435359098]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>&middot; <a href="https://djimedourado.github.io/WebMap/index.html">DjimeDourado</a>');
+        var autolinker = new Autolinker({truncate: {length: 60, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_ESRITopo_0');
+        map.getPane('pane_ESRITopo_0').style.zIndex = 4;
+        var layer_ESRITopo_0 = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            pane: 'pane_ESRITopo_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 8,
+            maxZoom: 18,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_ESRITopo_0;
+        map.addLayer(layer_ESRITopo_0);
+        map.createPane('pane_GoogleRoad_1');
+        map.getPane('pane_GoogleRoad_1').style.zIndex = 5;
+        var layer_GoogleRoad_1 = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleRoad_1',
+            opacity: 1.0,
+            attribution: '<a href="https://www.google.at/permissions/geoguidelines/attr-guide.html"></a>',
+            minZoom: 8,
+            maxZoom: 18,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_GoogleRoad_1;
+        map.createPane('pane_GoogleHybrid_2');
+        map.getPane('pane_GoogleHybrid_2').style.zIndex = 6;
+        var layer_GoogleHybrid_2 = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleHybrid_2',
+            opacity: 1.0,
+            attribution: '<a href="https://www.google.at/permissions/geoguidelines/attr-guide.html">Map Google</a>',
+            minZoom: 8,
+            maxZoom: 18,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_GoogleHybrid_2;
+        map.createPane('pane_DarkMatter_3');
+        map.getPane('pane_DarkMatter_3').style.zIndex = 7;
+        var layer_DarkMatter_3 = L.tileLayer('http://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+            pane: 'pane_DarkMatter_3',
+            opacity: 1.0,
+            attribution: '<a href="https://cartodb.com/basemaps/">CartonDB</a>',
+            minZoom: 8,
+            maxZoom: 18,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_DarkMatter_3;
+        function pop_Freguesia_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Des_Simpli'] !== null ? autolinker.link(feature.properties['Des_Simpli'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Freguesia_4_0() {
+            return {
+                pane: 'pane_Freguesia_4',
+                opacity: 1,
+                color: 'rgba(39,39,39,1.0)',
+                dashArray: '10,5,1,5,1,5',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(183,72,75,0.0)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Freguesia_4');
+        map.getPane('pane_Freguesia_4').style.zIndex = 404;
+        map.getPane('pane_Freguesia_4').style['mix-blend-mode'] = 'normal';
+        var layer_Freguesia_4 = new L.geoJson(json_Freguesia_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Freguesia_4',
+            layerName: 'layer_Freguesia_4',
+            pane: 'pane_Freguesia_4',
+            onEachFeature: pop_Freguesia_4,
+            style: style_Freguesia_4_0,
+        });
+        bounds_group.addLayer(layer_Freguesia_4);
+        function pop_Clostersdealunos_5(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Nome_Escol</th>\
+                        <td>' + (feature.properties['Nome_Escol'] !== null ? autolinker.link(feature.properties['Nome_Escol'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Agrupament'] !== null ? autolinker.link(feature.properties['Agrupament'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Tipologia'] !== null ? autolinker.link(feature.properties['Tipologia'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Total'] !== null ? autolinker.link(feature.properties['Total'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Clostersdealunos_5_0() {
+            return {
+                pane: 'pane_Clostersdealunos_5',
+                radius: 0,
+                opacity: 1,
+                color: 'rgba(0,0,0,0.391)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,255,255,0.391)',
+                interactive: false,
+            }
+        }
+        map.createPane('pane_Clostersdealunos_5');
+        map.getPane('pane_Clostersdealunos_5').style.zIndex = 405;
+        map.getPane('pane_Clostersdealunos_5').style['mix-blend-mode'] = 'normal';
+        var layer_Clostersdealunos_5 = new L.geoJson(json_Clostersdealunos_5, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_Clostersdealunos_5',
+            layerName: 'layer_Clostersdealunos_5',
+            pane: 'pane_Clostersdealunos_5',
+            onEachFeature: pop_Clostersdealunos_5,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Clostersdealunos_5_0(feature));
+            },
+        });
+        var cluster_Clostersdealunos_5 = new L.MarkerClusterGroup({showCoverageOnHover: false,
+            spiderfyDistanceMultiplier: 2});
+        cluster_Clostersdealunos_5.addLayer(layer_Clostersdealunos_5);
+
+        bounds_group.addLayer(layer_Clostersdealunos_5);
+        function pop_Fluxos_6(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(feature.properties['fid'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Escola'] !== null ? autolinker.link(feature.properties['Escola'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Agrupamento'] !== null ? autolinker.link(feature.properties['Agrupamento'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Nível'] !== null ? autolinker.link(feature.properties['Nível'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Total'] !== null ? autolinker.link(feature.properties['Total'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Fluxos_6_0(feature) {
+            if (feature.properties['Total'] >= 1.000000 && feature.properties['Total'] <= 1.000000 ) {
+                return {
+                pane: 'pane_Fluxos_6',
+                opacity: 1,
+                color: 'rgba(84,176,74,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1,
+                fillOpacity: 0,
+                interactive: false,
+            }
+            }
+            if (feature.properties['Total'] >= 1.000000 && feature.properties['Total'] <= 5.000000 ) {
+                return {
+                pane: 'pane_Fluxos_6',
+                opacity: 1,
+                color: 'rgba(84,176,74,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+            }
+            if (feature.properties['Total'] >= 5.000000 && feature.properties['Total'] <= 21.000000 ) {
+                return {
+                pane: 'pane_Fluxos_6',
+                opacity: 1,
+                color: 'rgba(84,176,74,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+            }
+        }
+        map.createPane('pane_Fluxos_6');
+        map.getPane('pane_Fluxos_6').style.zIndex = 406;
+        map.getPane('pane_Fluxos_6').style['mix-blend-mode'] = 'normal';
+        var layer_Fluxos_6 = new L.geoJson(json_Fluxos_6, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_Fluxos_6',
+            layerName: 'layer_Fluxos_6',
+            pane: 'pane_Fluxos_6',
+            onEachFeature: pop_Fluxos_6,
+            style: style_Fluxos_6_0,
+        });
+        bounds_group.addLayer(layer_Fluxos_6);
+        function pop_Alunos_7(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(feature.properties['fid'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Escola'] !== null ? autolinker.link(feature.properties['Escola'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Agrupamento'] !== null ? autolinker.link(feature.properties['Agrupamento'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Nível'] !== null ? autolinker.link(feature.properties['Nível'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Total'] !== null ? autolinker.link(feature.properties['Total'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Alunos_7_0(feature) {
+            if (feature.properties['Total'] >= 1.000000 && feature.properties['Total'] <= 1.000000 ) {
+                return {
+                pane: 'pane_Alunos_7',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.833)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(247,251,255,0.833)',
+                interactive: false,
+            }
+            }
+            if (feature.properties['Total'] >= 1.000000 && feature.properties['Total'] <= 5.000000 ) {
+                return {
+                pane: 'pane_Alunos_7',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.833)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(115,179,216,0.833)',
+                interactive: false,
+            }
+            }
+            if (feature.properties['Total'] >= 5.000000 && feature.properties['Total'] <= 21.000000 ) {
+                return {
+                pane: 'pane_Alunos_7',
+                radius: 4.0,
+                opacity: 1,
+                color: 'rgba(35,35,35,0.833)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(8,48,107,0.833)',
+                interactive: false,
+            }
+            }
+        }
+        L.control.scale().addTo(map);
+        map.createPane('pane_Alunos_7');
+        map.getPane('pane_Alunos_7').style.zIndex = 407;
+        map.getPane('pane_Alunos_7').style['mix-blend-mode'] = 'normal';
+        var layer_Alunos_7 = new L.geoJson(json_Alunos_7, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_Alunos_7',
+            layerName: 'layer_Alunos_7',
+            pane: 'pane_Alunos_7',
+            onEachFeature: pop_Alunos_7,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_Alunos_7_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_Alunos_7);
+        function pop_Agrupamentodeescolas_8(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>Escola</strong><br />' + (feature.properties['Escola'] !== null ? autolinker.link(feature.properties['Escola'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Agrupamento</strong><br />' + (feature.properties['Agrupamento'] !== null ? autolinker.link(feature.properties['Agrupamento'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Nível</strong><br />' + (feature.properties['Nível'] !== null ? autolinker.link(feature.properties['Nível'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>Total</strong><br />' + (feature.properties['Total'] !== null ? autolinker.link(feature.properties['Total'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">XY</th>\
+                        <td>' + (feature.properties['XY'] !== null ? autolinker.link(feature.properties['XY'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Agrupamentodeescolas_8_0(feature) {
+            switch(String(feature.properties['Agrupamento'])) {
+                case 'Coimbra Centro':
+                    return {
+                pane: 'pane_Agrupamentodeescolas_8',
+                shape: 'triangle',
+                radius: 10,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(68,30,240,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Coimbra Oeste':
+                    return {
+                pane: 'pane_Agrupamentodeescolas_8',
+                shape: 'triangle',
+                radius: 10,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(110,229,31,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Coimbra Sul':
+                    return {
+                pane: 'pane_Agrupamentodeescolas_8',
+                shape: 'triangle',
+                radius: 10,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(116,232,171,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Eugénio de Castro':
+                    return {
+                pane: 'pane_Agrupamentodeescolas_8',
+                shape: 'triangle',
+                radius: 10,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(115,187,223,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Martim de Freitas':
+                    return {
+                pane: 'pane_Agrupamentodeescolas_8',
+                shape: 'triangle',
+                radius: 10,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(201,172,83,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Rainha Santa Isabel':
+                    return {
+                pane: 'pane_Agrupamentodeescolas_8',
+                shape: 'triangle',
+                radius: 10,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(205,119,201,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'Não Agrupada':
+                    return {
+                pane: 'pane_Agrupamentodeescolas_8',
+                shape: 'triangle',
+                radius: 10,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(231,106,118,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_Agrupamentodeescolas_8');
+        map.getPane('pane_Agrupamentodeescolas_8').style.zIndex = 408;
+        map.getPane('pane_Agrupamentodeescolas_8').style['mix-blend-mode'] = 'normal';
+        var layer_Agrupamentodeescolas_8 = new L.geoJson(json_Agrupamentodeescolas_8, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Agrupamentodeescolas_8',
+            layerName: 'layer_Agrupamentodeescolas_8',
+            pane: 'pane_Agrupamentodeescolas_8',
+            onEachFeature: pop_Agrupamentodeescolas_8,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.shapeMarker(latlng, style_Agrupamentodeescolas_8_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_Agrupamentodeescolas_8);
+        map.addLayer(layer_Agrupamentodeescolas_8);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'Agrupamento de escolas<br /><table><tr><td style="text-align: center;"><img src="legend/Agrupamentodeescolas_8_CoimbraCentro0.png" /></td><td>Coimbra Centro</td></tr><tr><td style="text-align: center;"><img src="legend/Agrupamentodeescolas_8_CoimbraOeste1.png" /></td><td>Coimbra Oeste</td></tr><tr><td style="text-align: center;"><img src="legend/Agrupamentodeescolas_8_CoimbraSul2.png" /></td><td>Coimbra Sul</td></tr><tr><td style="text-align: center;"><img src="legend/Agrupamentodeescolas_8_EugéniodeCastro3.png" /></td><td>Eugénio de Castro</td></tr><tr><td style="text-align: center;"><img src="legend/Agrupamentodeescolas_8_MartimdeFreitas4.png" /></td><td>Martim de Freitas</td></tr><tr><td style="text-align: center;"><img src="legend/Agrupamentodeescolas_8_RainhaSantaIsabel5.png" /></td><td>Rainha Santa Isabel</td></tr><tr><td style="text-align: center;"><img src="legend/Agrupamentodeescolas_8_NãoAgrupada6.png" /></td><td>Não Agrupada</td></tr></table>': layer_Agrupamentodeescolas_8,'Alunos<br /><table><tr><td style="text-align: center;"><img src="legend/Alunos_7_10.png" /></td><td>1</td></tr><tr><td style="text-align: center;"><img src="legend/Alunos_7_151.png" /></td><td>1 - 5</td></tr><tr><td style="text-align: center;"><img src="legend/Alunos_7_5212.png" /></td><td>5 - 21</td></tr></table>': layer_Alunos_7,'Fluxos<br /><table><tr><td style="text-align: center;"><img src="legend/Fluxos_6_10.png" /></td><td>1</td></tr><tr><td style="text-align: center;"><img src="legend/Fluxos_6_151.png" /></td><td>1 - 5 </td></tr><tr><td style="text-align: center;"><img src="legend/Fluxos_6_5212.png" /></td><td>5 - 21 </td></tr></table>': layer_Fluxos_6,'<img src="legend/Clostersdealunos_5.png" /> Clusters de alunos': cluster_Clostersdealunos_5,'<img src="legend/Freguesia_4.png" /> Freguesia': layer_Freguesia_4,"Dark Matter": layer_DarkMatter_3,"Google Hybrid": layer_GoogleHybrid_2,"Google Road": layer_GoogleRoad_1,"ESRI Topo": layer_ESRITopo_0,}).addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_Agrupamentodeescolas_8,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'Escola'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "85%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"Escola": "str","Nível": "str","Agrupamento": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Escola = document.createElement('div');
+            div_Escola.id = "div_Escola";
+            div_Escola.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Escola);
+            sel_Escola = document.createElement('select');
+            sel_Escola.multiple = true;
+            sel_Escola.size = 10;
+            sel_Escola.id = "sel_Escola";
+            var Escola_options_str = "<option value='' unselected>Não selecionado</option>";
+            sel_Escola.onchange = function(){filterFunc()};
+            Escola_options_str  += '<option value="EB Adémia">EB Adémia</option>';
+            Escola_options_str  += '<option value="EB Almalaguês">EB Almalaguês</option>';
+            Escola_options_str  += '<option value="EB Almas de Freire">EB Almas de Freire</option>';
+            Escola_options_str  += '<option value="EB Almedina">EB Almedina</option>';
+            Escola_options_str  += '<option value="EB Ameal">EB Ameal</option>';
+            Escola_options_str  += '<option value="EB Antanhol">EB Antanhol</option>';
+            Escola_options_str  += '<option value="EB Antuzede">EB Antuzede</option>';
+            Escola_options_str  += '<option value="EB Areeiro">EB Areeiro</option>';
+            Escola_options_str  += '<option value="EB Arzila">EB Arzila</option>';
+            Escola_options_str  += '<option value="EB Assafarge">EB Assafarge</option>';
+            Escola_options_str  += '<option value="EB Associação Portuguesa de Paralisia Cerebral">EB Associação Portuguesa de Paralisia Cerebral</option>';
+            Escola_options_str  += '<option value="EB Bairro Azul">EB Bairro Azul</option>';
+            Escola_options_str  += '<option value="EB Brasfemes">EB Brasfemes</option>';
+            Escola_options_str  += '<option value="EB Casais">EB Casais</option>';
+            Escola_options_str  += '<option value="EB Casconha">EB Casconha</option>';
+            Escola_options_str  += '<option value="EB Castelo Viegas">EB Castelo Viegas</option>';
+            Escola_options_str  += '<option value="EB Ceira">EB Ceira</option>';
+            Escola_options_str  += '<option value="EB Cernache">EB Cernache</option>';
+            Escola_options_str  += '<option value="EB Conchada">EB Conchada</option>';
+            Escola_options_str  += '<option value="EB Coselhas">EB Coselhas</option>';
+            Escola_options_str  += '<option value="EB Cruz de Morouços">EB Cruz de Morouços</option>';
+            Escola_options_str  += '<option value="EB Dianteiro">EB Dianteiro</option>';
+            Escola_options_str  += '<option value="EB Drª. Maria Alice Gouveia">EB Drª. Maria Alice Gouveia</option>';
+            Escola_options_str  += '<option value="EB Eiras">EB Eiras</option>';
+            Escola_options_str  += '<option value="EB Espírito Santo das Touregas">EB Espírito Santo das Touregas</option>';
+            Escola_options_str  += '<option value="EB Eugénio de Castro">EB Eugénio de Castro</option>';
+            Escola_options_str  += '<option value="EB Fala">EB Fala</option>';
+            Escola_options_str  += '<option value="EB Feteira">EB Feteira</option>';
+            Escola_options_str  += '<option value="EB Ingote">EB Ingote</option>';
+            Escola_options_str  += '<option value="EB Inês de Castro">EB Inês de Castro</option>';
+            Escola_options_str  += '<option value="EB Larçã">EB Larçã</option>';
+            Escola_options_str  += '<option value="EB Loreto">EB Loreto</option>';
+            Escola_options_str  += '<option value="EB Marmeleira">EB Marmeleira</option>';
+            Escola_options_str  += '<option value="EB Martim de Freitas">EB Martim de Freitas</option>';
+            Escola_options_str  += '<option value="EB Montes Claros">EB Montes Claros</option>';
+            Escola_options_str  += '<option value="EB Norton de Matos">EB Norton de Matos</option>';
+            Escola_options_str  += '<option value="EB Olivais">EB Olivais</option>';
+            Escola_options_str  += '<option value="EB Palheira">EB Palheira</option>';
+            Escola_options_str  += '<option value="EB Poeta Manuel da Silva Gaio">EB Poeta Manuel da Silva Gaio</option>';
+            Escola_options_str  += '<option value="EB Póvoa">EB Póvoa</option>';
+            Escola_options_str  += '<option value="EB Quinta das Flores">EB Quinta das Flores</option>';
+            Escola_options_str  += '<option value="EB Rainha Santa Isabel">EB Rainha Santa Isabel</option>';
+            Escola_options_str  += '<option value="EB Ribeira de Frades">EB Ribeira de Frades</option>';
+            Escola_options_str  += '<option value="EB Santa Apolónia">EB Santa Apolónia</option>';
+            Escola_options_str  += '<option value="EB Santa Cruz">EB Santa Cruz</option>';
+            Escola_options_str  += '<option value="EB Sargento-Mor">EB Sargento-Mor</option>';
+            Escola_options_str  += '<option value="EB Solum">EB Solum</option>';
+            Escola_options_str  += '<option value="EB Solum Sul">EB Solum Sul</option>';
+            Escola_options_str  += '<option value="EB Souselas">EB Souselas</option>';
+            Escola_options_str  += '<option value="EB São Bartolomeu">EB São Bartolomeu</option>';
+            Escola_options_str  += '<option value="EB São João do Campo">EB São João do Campo</option>';
+            Escola_options_str  += '<option value="EB São Martinho de Árvore">EB São Martinho de Árvore</option>';
+            Escola_options_str  += '<option value="EB São Martinho do Bispo">EB São Martinho do Bispo</option>';
+            Escola_options_str  += '<option value="EB São Paulo de Frades">EB São Paulo de Frades</option>';
+            Escola_options_str  += '<option value="EB Torres do Mondego">EB Torres do Mondego</option>';
+            Escola_options_str  += '<option value="EB Tovim">EB Tovim</option>';
+            Escola_options_str  += '<option value="EB Trouxemil">EB Trouxemil</option>';
+            Escola_options_str  += '<option value="EB Vendas de Ceira">EB Vendas de Ceira</option>';
+            Escola_options_str  += '<option value="EB Vera Cruz">EB Vera Cruz</option>';
+            Escola_options_str  += '<option value="EB Vila Verde">EB Vila Verde</option>';
+            Escola_options_str  += '<option value="EB Vilela">EB Vilela</option>';
+            Escola_options_str  += '<option value="EB n.º 1 de São Silvestre">EB n.º 1 de São Silvestre</option>';
+            Escola_options_str  += '<option value="EB n.º 1 de Taveiro">EB n.º 1 de Taveiro</option>';
+            Escola_options_str  += '<option value="EB n.º 2 de São Silvestre">EB n.º 2 de São Silvestre</option>';
+            Escola_options_str  += '<option value="EB n.º 2 de Taveiro">EB n.º 2 de Taveiro</option>';
+            Escola_options_str  += '<option value="EB/S Quinta das Flores">EB/S Quinta das Flores</option>';
+            Escola_options_str  += '<option value="ES Avelar Brotero">ES Avelar Brotero</option>';
+            Escola_options_str  += '<option value="ES D. Duarte">ES D. Duarte</option>';
+            Escola_options_str  += '<option value="ES Dom Dinis">ES Dom Dinis</option>';
+            Escola_options_str  += '<option value="ES Infanta Dona Maria">ES Infanta Dona Maria</option>';
+            Escola_options_str  += '<option value="ES Jaime Cortesão">ES Jaime Cortesão</option>';
+            Escola_options_str  += '<option value="JI Ameal">JI Ameal</option>';
+            Escola_options_str  += '<option value="JI Andorinha">JI Andorinha</option>';
+            Escola_options_str  += '<option value="JI Carvalhais de Baixo">JI Carvalhais de Baixo</option>';
+            Escola_options_str  += '<option value="JI Ceira">JI Ceira</option>';
+            Escola_options_str  += '<option value="JI Olivais">JI Olivais</option>';
+            Escola_options_str  += '<option value="JI São Bento">JI São Bento</option>';
+            Escola_options_str  += '<option value="JI São João do Campo">JI São João do Campo</option>';
+            sel_Escola.innerHTML = Escola_options_str;
+            div_Escola.appendChild(sel_Escola);
+            var lab_Escola = document.createElement('div');
+            lab_Escola.innerHTML = 'Selecionar Escola';
+            lab_Escola.className = 'filterlabel';
+            div_Escola.appendChild(lab_Escola);
+            var reset_Escola = document.createElement('div');
+            reset_Escola.innerHTML = 'Limpar filtro';
+            reset_Escola.className = 'filterlabel';
+            reset_Escola.onclick = function() {
+                var options = document.getElementById("sel_Escola").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Escola.appendChild(reset_Escola);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Nvel = document.createElement('div');
+            div_Nvel.id = "div_Nvel";
+            div_Nvel.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Nvel);
+            sel_Nvel = document.createElement('select');
+            sel_Nvel.multiple = true;
+            sel_Nvel.size = 4;
+            sel_Nvel.id = "sel_Nvel";
+            var Nvel_options_str = "<option value='' unselected>Não selecionado</option>";
+            sel_Nvel.onchange = function(){filterFunc()};
+            Nvel_options_str  += '<option value="1CEB">1CEB</option>';
+            Nvel_options_str  += '<option value="2,3CEB">2,3CEB</option>';
+            Nvel_options_str  += '<option value="ES">ES</option>';
+            Nvel_options_str  += '<option value="JI">JI</option>';
+            sel_Nvel.innerHTML = Nvel_options_str;
+            div_Nvel.appendChild(sel_Nvel);
+            var lab_Nvel = document.createElement('div');
+            lab_Nvel.innerHTML = 'Selecionar Nível';
+            lab_Nvel.className = 'filterlabel';
+            div_Nvel.appendChild(lab_Nvel);
+            var reset_Nvel = document.createElement('div');
+            reset_Nvel.innerHTML = 'Limpar filtro';
+            reset_Nvel.className = 'filterlabel';
+            reset_Nvel.onclick = function() {
+                var options = document.getElementById("sel_Nvel").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Nvel.appendChild(reset_Nvel);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_Agrupamento = document.createElement('div');
+            div_Agrupamento.id = "div_Agrupamento";
+            div_Agrupamento.className= "filterselect";
+            document.getElementById("menu").appendChild(div_Agrupamento);
+            sel_Agrupamento = document.createElement('select');
+            sel_Agrupamento.multiple = true;
+            sel_Agrupamento.size = 7;
+            sel_Agrupamento.id = "sel_Agrupamento";
+            var Agrupamento_options_str = "<option value='' unselected>Não selecionado</option>";
+            sel_Agrupamento.onchange = function(){filterFunc()};
+            Agrupamento_options_str  += '<option value="Coimbra Centro">Coimbra Centro</option>';
+            Agrupamento_options_str  += '<option value="Coimbra Oeste">Coimbra Oeste</option>';
+            Agrupamento_options_str  += '<option value="Coimbra Sul">Coimbra Sul</option>';
+            Agrupamento_options_str  += '<option value="Eugénio de Castro">Eugénio de Castro</option>';
+            Agrupamento_options_str  += '<option value="Martim de Freitas">Martim de Freitas</option>';
+            Agrupamento_options_str  += '<option value="Não Agrupada">Não Agrupada</option>';
+            Agrupamento_options_str  += '<option value="Rainha Santa Isabel">Rainha Santa Isabel</option>';
+            sel_Agrupamento.innerHTML = Agrupamento_options_str;
+            div_Agrupamento.appendChild(sel_Agrupamento);
+            var lab_Agrupamento = document.createElement('div');
+            lab_Agrupamento.innerHTML = 'Selecionar Agrupamento';
+            lab_Agrupamento.className = 'filterlabel';
+            div_Agrupamento.appendChild(lab_Agrupamento);
+            var reset_Agrupamento = document.createElement('div');
+            reset_Agrupamento.innerHTML = 'Limpar filtro';
+            reset_Agrupamento.className = 'filterlabel';
+            reset_Agrupamento.onclick = function() {
+                var options = document.getElementById("sel_Agrupamento").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_Agrupamento.appendChild(reset_Agrupamento);
+        </script>
+    </body>
+</html>
